@@ -1,0 +1,35 @@
+Matt Stropkey
+CS1550
+Project 2 write up
+
+This project was probably the most chellenging project I have had for any class up to this point.  The hardest 
+part for me was keeping all the semaphores synchronized so that deadlock never occurs.  I think I used more 
+sempahores than I really needed to but by the time I got it all to work, I did not want to remove them and 
+possibly mess the program up.  The program is starvation free because I essentially use barrier synchronization 
+to align all the processes in both the tenant and agent process.  When a process calls either agent or tenant 
+arrives, the process must wait until all other processes from that burst have made it inside the method before 
+they continue execution.  Once the last process of the burst makes it in, it wakes up one of the waiting processes.
+This originally gave me issues because processes would come out of the wait list in incorrect order, such as tenant 1 
+saying it arrived after tenant 3.  I eventually figured out I could make processes go back to sleep until they were 
+in the right order upone being woken up by a call to up.  This process continues on through execution so that bursts 
+of tenants stick together, thus if process 1 is viewing the apartment and process 2 is right behind it, process 1 
+would go to exit the apartment until process 2 has already entered the apartment and is also ready to leave.  For agent 
+processes, they are allowed to arrive at the door but then get put to sleep and stay asleep if another agent is already 
+in the apartment.  Upon leaving the apartment, an agent will wake up a agent waiting at the door so that starvation 
+is prevented.  I also made it so that if there are no more tenants or no more agents to come and some agents or tenant 
+processes have still not finished, they will be allowed to execute while not entering the apartment.  These agents and 
+tenants just go to the door and leave.  For example, if there was 1 agent that lets 10 people see the apartment, 
+and then there are no more agents to come but 5 more tenants that have not finished, those tenants will go straight 
+to leaving upon arriving or being awaken.  This was also to prevent starvation as all processes get a chance to 
+execute to completion.  Preventing deadlock was a much bigger challenge, especially condsidering how many sempahores 
+that I ended up using.  The key thing for me was to have a lock between tenants and agents, locks between agents 
+themselves, and locks between tenants themselves.  When a tenant was arriving, I made it so that if the first tenant 
+still had not stated that it arrived, all other would be stuck at a lock at the beginning of the method until the 
+first tenant was done.  I then made tenants wait at the door until the tenant in front of them was inside the 
+apartment.  Lastly, I did the same thing when tenants went to leave.  For agents, I had a lock that agents would 
+have to obtain when altering critical regions.  For example, if one agent wanted release a mutual lock that was used to 
+keep the tenant and agent processes synchronized, then it would have to wait until the agent process that assumed it 
+had the mutual lock was finished.  To prevent an agent seeing more than 10 tenants, I just used a counter that each 
+agent would set upon opening the door.  When each tenant entered the apartment, they would decrement the counter.  If 
+the counter got to 0, then the last process in would not wake up another tenant.  A boolean was then set to tell the 
+next agent that there are tenants waiting from the last burst that need to execute as soon as the door is open.
