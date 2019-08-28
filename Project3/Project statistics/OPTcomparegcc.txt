@@ -1,0 +1,16 @@
+Number of frames: 8
+Total memory accesses: 515683
+Total page faults: 13328
+Total writes to disk: 4381
+Number of frames: 16
+Total memory accesses: 515683
+Total page faults: 3020
+Total writes to disk: 1020
+Number of frames: 32
+Total memory accesses: 515683
+Total page faults: 491
+Total writes to disk: 221
+Number of frames: 64
+Total memory accesses: 515683
+Total page faults: 318
+Total writes to disk: 127
